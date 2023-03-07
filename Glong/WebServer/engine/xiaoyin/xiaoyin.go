@@ -7,17 +7,17 @@ import (
 
 // Engine 实现HTTP服务接口的管理对象
 type Engine struct {
-    routerMgr *router // 路由管理
+    routerMgr *RouterMgr // 路由管理
 }
 
 // Create 创建XiaoYinEngine服务管理对象
 func Create() *Engine {
-    return &Engine{routerMgr: newRouter()}
+    return &Engine{routerMgr: NewRouter()}
 }
 
 // 添加路由
 func (e *Engine) addRouter(aMethod string, aPath string, aHandler HandlerFunc) {
-    e.routerMgr.addRouter(aMethod, aPath, aHandler)
+    e.routerMgr.AddRouter(aMethod, aPath, aHandler)
 }
 
 // GET 添加Get请求路由

@@ -12,6 +12,7 @@ type Context struct {
     Request        *http.Request       // 请求对象
     Path           string              // 请求路径
     Method         string              // 请求方式
+    Params         map[string]string   // 模糊匹配参数
     StatusCode     int                 // 返回状态码
 }
 
