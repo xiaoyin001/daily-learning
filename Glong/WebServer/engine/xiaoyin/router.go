@@ -43,7 +43,7 @@ func parsePath(aPath string) []string {
 }
 
 // AddRouter 添加路由
-func (r RouterMgr) AddRouter(aMethod string, aPath string, aHandler HandlerFunc) {
+func (r RouterMgr) addRouter(aMethod string, aPath string, aHandler HandlerFunc) {
     fmt.Println("添加路由 --> ", aMethod, "-", aPath)
     
     // 获取某种请求类型的根节点
@@ -62,8 +62,8 @@ func (r RouterMgr) AddRouter(aMethod string, aPath string, aHandler HandlerFunc)
     r.handlers[mKey] = aHandler
 }
 
-// GetRoute 获取路由
-func (r RouterMgr) GetRoute(aMethod, aPath string) (*TrieNode, map[string]string) {
+// 获取路由
+func (r RouterMgr) getRoute(aMethod, aPath string) (*TrieNode, map[string]string) {
     // 获取请求类型的根节点
     mRoot, mOk := r.roots[aMethod]
     if !mOk {
@@ -107,7 +107,7 @@ func (r RouterMgr) ExecHandleFunc(aContext *engine.Context) {
     
     fmt.Println("开始处理请求 --> ", aContext.Method, "-", aContext.Path)
     
-    mNode, mParams := r.GetRoute(aContext.Method, aContext.Path)
+    mNode, mParams := r.getRoute(aContext.Method, aContext.Path)
     if mNode != nil {
         aContext.Params = mParams
         

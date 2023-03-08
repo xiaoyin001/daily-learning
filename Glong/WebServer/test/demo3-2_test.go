@@ -14,7 +14,7 @@ func Test3_2(t *testing.T) {
         ResponseWriter: nil,
         Request:        nil,
         Path:           "",
-        Method:         "Get",
+        Method:         "GET",
         Params:         nil,
         StatusCode:     0,
     }
@@ -43,10 +43,10 @@ func tempHandlerFunc(aContext *engine.Context) {
 func createTempRoute() *xiaoyin.RouterMgr {
     mRoute := xiaoyin.NewRouter()
     
-    mRoute.AddRouter("Get", "/", tempHandlerFunc)
-    mRoute.AddRouter("Get", "/aa", tempHandlerFunc)
-    mRoute.AddRouter("Get", "/aa/:name", tempHandlerFunc)
-    mRoute.AddRouter("Get", "/aa/bb/cc", tempHandlerFunc)
+    // mRoute.addRouter("GET", "/", tempHandlerFunc)
+    // mRoute.addRouter("GET", "/aa", tempHandlerFunc)
+    // mRoute.addRouter("GET", "/aa/:name", tempHandlerFunc)
+    // mRoute.addRouter("GET", "/aa/bb/cc", tempHandlerFunc)
     
     return mRoute
 }
