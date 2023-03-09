@@ -1,27 +1,33 @@
 package xiaoyin
 
 import (
-    "WebServer/engine"
     "net/http"
+    "strings"
 )
 
 // RouterGroup 路由组
 type RouterGroup struct {
     basePath    string        // 当前组的URL前缀
-    middlewares []HandlerFunc // 中间件绑定方法 TODO 这个中间件字段是预留的，目前还没用到
+    middlewares []HandlerFunc // 中间件绑定方法
     engine      *Engine       // 所有地方都用是一个
 }
 
 // AddRouteGroup 添加路由组
 func (group *RouterGroup) AddRouteGroup(aBasePath string) *RouterGroup {
     mNewGroup := &RouterGroup{
-        basePath: group.basePath + aBasePath,
-        engine:   group.engine,
+        basePath:    group.basePath + aBasePath,
+        middlewares: make([]HandlerFunc, 0),
+        engine:      group.engine,
     }
     
     group.engine.AllGroups = append(group.engine.AllGroups, mNewGroup)
     
     return mNewGroup
+}
+
+// AddMiddlewares 添加中间件绑定的方法
+func (group *RouterGroup) AddMiddlewares(aMiddlewares ...HandlerFunc) {
+    group.middlewares = append(group.middlewares, aMiddlewares...)
 }
 
 // GET 添加Get请求路由
@@ -55,6 +61,7 @@ func Create() *Engine {
         RouterMgr:   NewRouter(),
     }
     
+    mEngine.middlewares = make([]HandlerFunc, 0)
     mEngine.engine = mEngine
     
     return mEngine
@@ -77,6 +84,15 @@ func (e *Engine) StartServer(aAddr string) (err error) {
 
 // 实现 ServeHTTP 方法，请求都会经过这里
 func (e *Engine) ServeHTTP(aRspW http.ResponseWriter, aReq *http.Request) {
-    mContext := engine.NewContext(aRspW, aReq)
+    mContext := NewContext(aRspW, aReq)
+    
+    // 先将匹配的中间件方法加入到切片中
+    for _, mGroup := range e.AllGroups {
+        if strings.HasPrefix(aReq.URL.Path, mGroup.basePath) {
+            mContext.Handlers = append(mContext.Handlers, mGroup.middlewares...)
+        }
+    }
+    
+    // 然后再执行路由方法
     e.RouterMgr.ExecHandleFunc(mContext)
 }

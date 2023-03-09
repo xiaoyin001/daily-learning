@@ -1,7 +1,6 @@
 package main
 
 import (
-    "WebServer/engine"
     "WebServer/engine/xiaoyin"
     "fmt"
     "net/http"
@@ -12,10 +11,19 @@ func main() {
     
     mEngine := xiaoyin.Create()
     
-    mEngine.GET("/", testFunc01)
-    mEngine.POST("/xiaoyin", testFunc02)
-    mEngine.GET("/json", testFunc02)
-    mEngine.GET("/data", testFunc03)
+    mGroup0 := mEngine.AddRouteGroup("/")
+    mGroup0.AddMiddlewares(testFunc02)
+    mGroup0.GET("/", testFunc01)
+    
+    mGroup1 := mEngine.AddRouteGroup("/xiaoyin01")
+    mGroup1.AddMiddlewares(testFunc02)
+    mGroup1.GET("/aa", testFunc01)
+    mGroup1.GET("/aa/bb", testFunc01)
+    
+    mGroup2 := mEngine.AddRouteGroup("/xiaoyin02")
+    mGroup2.AddMiddlewares(testFunc02)
+    mGroup2.GET("/aa", testFunc01)
+    mGroup2.GET("/aa/bb", testFunc01)
     
     err := mEngine.StartServer(":8888")
     if err != nil {
@@ -23,47 +31,13 @@ func main() {
     }
 }
 
-// 这些是临时处理，后面会优化掉的哦
-
-func testFunc01(aContext *engine.Context) {
-    aContext.RspString(http.StatusOK, "这是以字符串的形式返回的 %s", "小印")
+func testFunc01(aContext *xiaoyin.Context) {
+    mContent := fmt.Sprintf(" 测试返回内容 URL= %s \n", aContext.Path)
+    aContext.RspString(http.StatusOK, "%s"+mContent, "小印01")
     
-    // mNum, err := fmt.Fprintf(aContext.ResponseWriter, "当前请求路径=%q\n", aContext.Path)
-    // if err != nil {
-    // 	return
-    // }
-    //
-    // fmt.Println("返回数据大小为", mNum, "字节")
+    fmt.Printf("%s test路由的执行方法 URL: %s  Idx=%d \n", "小印01", aContext.Path, aContext.Idx)
 }
 
-type Temp struct {
-    Name string
-    Age  int
-}
-
-func testFunc02(aContext *engine.Context) {
-    mTemp := Temp{
-        Name: "小印6688",
-        Age:  18,
-    }
-    aContext.RspJson(http.StatusOK, mTemp)
-    
-    // for k, v := range aContext.Request.Header {
-    // 	_, err := fmt.Fprintf(aContext.ResponseWriter, "[%q] = %q\n", k, v)
-    // 	if err != nil {
-    // 		return
-    // 	}
-    // }
-}
-
-func testFunc03(aContext *engine.Context) {
-    mData := []byte("这是Data的返回内容")
-    aContext.RspData(http.StatusOK, mData)
-    
-    // for k, v := range aContext.Request.Header {
-    // 	_, err := fmt.Fprintf(aContext.ResponseWriter, "[%q] = %q\n", k, v)
-    // 	if err != nil {
-    // 		return
-    // 	}
-    // }
+func testFunc02(aContext *xiaoyin.Context) {
+    fmt.Printf("%s test中间件的执行方法 URL: %s  Idx=%d \n", "小印02", aContext.Path, aContext.Idx)
 }

@@ -1,7 +1,6 @@
 package test
 
 import (
-    "WebServer/engine"
     "WebServer/engine/xiaoyin"
     "fmt"
     "testing"
@@ -10,7 +9,7 @@ import (
 func Test3_2(t *testing.T) {
     mRoute := createTempRoute()
     
-    mContext := engine.Context{
+    mContext := xiaoyin.Context{
         ResponseWriter: nil,
         Request:        nil,
         Path:           "",
@@ -32,7 +31,7 @@ func Test3_2(t *testing.T) {
     // mRoute.ExecHandleFunc(&mContext)
 }
 
-func tempHandlerFunc(aContext *engine.Context) {
+func tempHandlerFunc(aContext *xiaoyin.Context) {
     fmt.Printf("%s test URL: %s \n", "小印001", aContext.Path)
     if len(aContext.Params) > 0 {
     

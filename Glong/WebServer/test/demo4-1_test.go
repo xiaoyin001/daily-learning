@@ -1,7 +1,6 @@
 package test
 
 import (
-    "WebServer/engine"
     "WebServer/engine/xiaoyin"
     "fmt"
     "testing"
@@ -16,7 +15,7 @@ func Test4_1(t *testing.T) {
     mGroup2 := mEngine.AddRouteGroup("/R2")
     mGroup2.GET("/aa", tempHandlerFunc2)
     
-    mContext := engine.Context{
+    mContext := xiaoyin.Context{
         ResponseWriter: nil,
         Request:        nil,
         Path:           "",
@@ -32,6 +31,6 @@ func Test4_1(t *testing.T) {
     mEngine.RouterMgr.ExecHandleFunc(&mContext)
 }
 
-func tempHandlerFunc2(aContext *engine.Context) {
+func tempHandlerFunc2(aContext *xiaoyin.Context) {
     fmt.Printf("%s test URL: %s \n", "小印001", aContext.Path)
 }

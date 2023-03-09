@@ -1,4 +1,4 @@
-package engine
+package xiaoyin
 
 import (
     "encoding/json"
@@ -14,6 +14,8 @@ type Context struct {
     Method         string              // 请求方式
     Params         map[string]string   // 模糊匹配参数
     StatusCode     int                 // 返回状态码
+    Handlers       []HandlerFunc       // 当前请求需要执行的方法(中间件、路由)
+    Idx            int                 // 方法执行标记
 }
 
 // NewContext 创建上下文
@@ -24,6 +26,21 @@ func NewContext(aRspW http.ResponseWriter, aReq *http.Request) *Context {
         Path:           aReq.URL.Path,
         Method:         aReq.Method,
         StatusCode:     0,
+        Handlers:       make([]HandlerFunc, 0),
+        Idx:            -1,
+    }
+}
+
+// Next 执行绑定的方法
+func (c *Context) Next() {
+    c.Idx++
+    
+    mLen := len(c.Handlers)
+    for ; c.Idx < mLen; c.Idx++ {
+        // 遍历所有的绑定的方法
+        mHandel := c.Handlers[c.Idx]
+        // 执行方法
+        mHandel(c)
     }
 }
 

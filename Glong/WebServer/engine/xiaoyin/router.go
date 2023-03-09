@@ -1,14 +1,13 @@
 package xiaoyin
 
 import (
-    "WebServer/engine"
     "fmt"
     "net/http"
     "strings"
 )
 
 // HandlerFunc 定义路由映射的方法类型
-type HandlerFunc func(*engine.Context)
+type HandlerFunc func(*Context)
 
 type RouterMgr struct {
     roots    map[string]*TrieNode   // 路由字典树根节点
@@ -97,7 +96,7 @@ func (r RouterMgr) getRoute(aMethod, aPath string) (*TrieNode, map[string]string
 }
 
 // ExecHandleFunc 执行路由方法
-func (r RouterMgr) ExecHandleFunc(aContext *engine.Context) {
+func (r RouterMgr) ExecHandleFunc(aContext *Context) {
     if aContext == nil {
         fmt.Println("ExecHandleFunc: aContext = nil")
         
@@ -114,8 +113,15 @@ func (r RouterMgr) ExecHandleFunc(aContext *engine.Context) {
         mKey := aContext.Method + "-" + mNode.Path
         // 在添加路由的时候就都是同时添加的，结点判断了这里就将判断省略了
         mHandlerFunc, _ := r.handlers[mKey]
-        mHandlerFunc(aContext)
+        aContext.Handlers = append(aContext.Handlers, mHandlerFunc)
     } else {
-        aContext.RspString(http.StatusNotFound, "404 接口不存在: %s\n", aContext.Path)
+        aContext.Handlers = append(aContext.Handlers, handleFunc404)
     }
+    
+    // 所有的都添加完毕后开始执行
+    aContext.Next()
+}
+
+func handleFunc404(aContext *Context) {
+    aContext.RspString(http.StatusNotFound, "404 接口不存在: %s\n", aContext.Path)
 }
