@@ -3,10 +3,15 @@ package test
 import (
     "WebServer/engine/xiaoyin"
     "fmt"
+    "math/rand"
     "testing"
+    "time"
 )
 
 func Test5_1(t *testing.T) {
+    
+    rand.Seed(time.Now().UnixNano())
+    
     mEngine := xiaoyin.Create()
     
     mGroup0 := mEngine.AddRouteGroup("/")
